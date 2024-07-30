@@ -1,12 +1,7 @@
 import { useState, useRef} from "react";
 import './App.css'
 
-// will use this function to generate the password
-const passwordGenerator = () => {
-};
 
-// this is for copy functionality
-const copyThePassword = () => {}
 
 function App(){
   const [includeUppercase, setIncludeUppercase] = useState <boolean>(true);
@@ -15,6 +10,42 @@ function App(){
   const [passwordLengh, setPasswordLength] = useState <number>(15);
   const [password, setPassword] = useState<string>(' ');
   const successBox = useRef<HTMLDivElement>(null);
+
+  // will use this function to generate the password
+const passwordGenerator = (e:React.FormEvent<HTMLFormElement>):void => {
+  e.preventDefault();
+  const lowercase: string = 'abdcefghijklmnopqrstuvwxyzw'
+  const uppercase: string = lowercase.toUpperCase();
+  const numbers: string = '0123456789';
+  const SpecialChars: string = '!@#$%^&*()_-+=|}]{[":><?,.~';
+
+  const chars: string = lowercase + 
+      (includeUppercase ? uppercase: '') +
+      (includeNumbers ? numbers: '') +
+      (includeSpecialChars ? SpecialChars: '')
+
+  let pw: string = '' ;
+
+  for(var i=0; i< passwordLengh; i++){
+    pw += chars[Math.floor(Math.random() * chars.length)]
+  }
+  setPassword(pw)
+};
+
+// this is for copy functionality
+const copyThePassword = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault();
+  if(password.length === 0) return ;
+  navigator.clipboard.writeText(password);
+  successBox.current?.classList.add('message-show');
+
+  setTimeout(() => {
+    successBox.current?.classList.remove('message-show');
+
+  }, 3000)
+  
+};
+
 
 
   return (
@@ -64,6 +95,8 @@ function App(){
               max= "25"
               value={passwordLengh}
               onChange={(e)=> setPasswordLength(parseInt(e.target.value))}
+              className="slider"
+            
               />
               <p className="pw-length-output">{passwordLengh}</p>
               </label>
